@@ -84,14 +84,28 @@ License: (MIT OR Apache-2.0) AND BSD-3-Clause
 - Multiple license files are supported
 
 ### Subpackage Licenses
+
+A subpackage only needs its own `%license` directive if it can be installed
+without pulling in another subpackage that already ships the license file.
+
 ```
-# Each subpackage should include relevant license files
+# -libs is installable on its own -- must ship %license
 %files libs
 %license LICENSE
 
+# -devel requires -libs (which ships %license) -- duplication NOT needed
 %files devel
-%license LICENSE
+%{_includedir}/%{name}
+%{_libdir}/lib%{name}.so
 ```
+
+**Rule**: Check the subpackage's `Requires:` chain. If any hard dependency
+already ships `%license`, the subpackage does not need to duplicate it.
+
+Subpackages that MAY need their own `%license`:
+- `-doc` with `BuildArch: noarch` (can be installed on a different arch
+  without the main package)
+- Any subpackage installable independently of the license-carrying package
 
 ## License Audit
 

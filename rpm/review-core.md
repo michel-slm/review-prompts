@@ -76,6 +76,8 @@ Only when reviewing spec files.
 - [ ] All installed files owned by a package
 - [ ] No duplicate file ownership between subpackages
 - [ ] Correct use of %doc, %license, %config, %ghost, %dir
+  - %license only required in subpackages that can be installed independently
+    of any other subpackage that ships the license file
 - [ ] No ownership of system directories (%{_bindir}, etc.)
 - [ ] %{_isa}-qualified dependencies where needed
 

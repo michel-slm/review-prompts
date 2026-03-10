@@ -112,6 +112,9 @@ For each potential issue:
 8. **ExclusiveArch missing** -- only needed when package truly cannot build elsewhere
 9. **Bundled library** -- may be justified if system version is incompatible
 10. **Static library in main package** -- only wrong if -static subpackage policy applies
+11. **Missing %license in subpackage** -- not needed if the subpackage has a hard
+    Requires on another subpackage that ships the license file (e.g., -devel
+    requires -libs which includes %license)
 
 ## When Uncertain
 
