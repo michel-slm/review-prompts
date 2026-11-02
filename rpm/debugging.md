@@ -41,6 +41,7 @@ build (dependency resolution, install-time scriptlet failures).
 | brp-* script errors after %install (`brp-mangle-shebangs`, `brp-python-bytecompile`, `check-rpaths`, `check-buildroot`) | Post-install checks | Ambiguous shebang (`#!/usr/bin/python`), invalid RPATH, buildroot path leaked into installed files |
 | `Missing build-id`, `find-debuginfo` errors, `Empty %files file debugsourcefiles.list` | debuginfo | Binary not built with distro flags, stripped by upstream build system, Go/Rust built without the ecosystem macros, noarch package with no binaries |
 | Package builds, but `dnf install` fails: `nothing provides` | Dependency generation | Auto-generated requires on something not packaged, private library leaked into requires/provides |
+| mock `--postinst`: root.log `ERROR backend.py: Installation of built packages failed`, preceded by `Transaction failed: Rpm transaction failed` | Scriptlets (post-build install) | A scriptlet exits non-zero: calls a binary not installed in the minimal root (exit 127), or a command without `\|\| :`. The scriptlet output is in root.log (`>>> Running %post scriptlet`, `Non-critical error in %post scriptlet`, `Scriptlet output:`), not build.log; the terminal only shows the summary line. rpm treats a failed `%post` as non-critical, but dnf5 reports the transaction as failed, so mock fails. Koji does not install built packages, so it does not catch this; real minimal installs (containers) do. See `scriptlets.md` |
 | Package installs with scriptlet errors | Scriptlets | See `scriptlets.md` |
 | rpmlint `E:` / `W:` lines on the SRPM or built RPMs | rpmlint | Real packaging issue, or rpmlint false positive (check before fixing) |
 
@@ -82,6 +83,18 @@ Prefer reproducing in the same buildroot the failure occurred in:
 fedpkg mockbuild                         # current branch's target
 fedpkg --release f42 mockbuild           # explicit release
 
+# fedpkg infers the release from the branch name. If the name is not a
+# release, it retries with the part before the first '-', so topic
+# branches prefixed with the dist-git branch they target need no --release:
+git switch -c rawhide-fix-foo            # -> rawhide
+git switch -c f45-backport-bar           # -> f45
+git switch -c epel10-fix-baz             # -> epel10
+fedpkg mockbuild                         # no --release required
+# fedpkg uses the tracked upstream branch name if one is set, otherwise
+# the local branch name, so keep the same name when pushing to a fork.
+# Without a known prefix it fails with
+# "Could not find release from branch name '...'".
+
 # Plain mock
 mock -r fedora-rawhide-x86_64 --rebuild foo.src.rpm
 mock -r centos-stream-10-x86_64 --rebuild foo.src.rpm
@@ -113,6 +126,8 @@ buildroots:
 # root.log of a good and a bad build list installed NVRs; diff them
 koji list-tagged --latest <tag> <pkg>
 koji list-buildroot <buildroot-id>       # what was in a given buildroot
+fedrq pkgs -b <branch> -F nevra <pkg>    # current version on any branch
+                                         # (see dependencies.md, fedrq)
 ```
 
 ## DEBUG.4: FTBFS After a Distribution Change

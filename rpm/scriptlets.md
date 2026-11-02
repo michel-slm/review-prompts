@@ -159,3 +159,80 @@ cat %{buildroot}%{_sysconfdir}/myapp.conf
 %post
 cat %{_sysconfdir}/myapp.conf
 ```
+
+### 6. Calling a Tool From a Package That Is Not Required
+Minimal roots (containers, mock `--postinst`) often lack tools such as
+`udevadm` (systemd-udev). An unguarded call exits 127 and fails the
+transaction. Scriptlets MUST exit 0 (Packaging Guidelines, Scriptlets:
+"All scriptlets MUST exit with the zero exit status"; `|| :` is the
+generic trick, but "other error checking/prevention measures may be more
+appropriate"). Decide by whether the action is critical:
+
+- **Not critical** (cache refresh, udev retrigger, ...): guard the call
+  with `command -v`, add `|| :`, and at most declare
+  `OrderWithRequires(post): <pkg>` so the tool is installed first when it
+  is in the same transaction. Do not add `Requires`. This is the same idea
+  as the guidelines' `%{?systemd_ordering}`, a weaker form of
+  `%{?systemd_requires}` that "only declares an ordering during an RPM
+  transaction" (Scriptlets, "Dependencies on the systemd package").
+- **Critical**: `Requires(post): <pkg>`, and still `|| :`.
+
+```
+# WRONG - udevadm is not installed in minimal roots
+%post hid2hci
+/sbin/udevadm trigger --subsystem-match=usb
+
+# CORRECT - not critical: order, guard, never fail
+OrderWithRequires(post): systemd-udev
+...
+%post hid2hci
+# udevadm is not installed in minimal roots (containers, mock)
+if command -v udevadm >/dev/null; then
+    # retrigger is best-effort, e.g. /sys may be read-only in containers
+    udevadm trigger --subsystem-match=usb || :
+fi
+```
+
+`OrderWithRequires` needs RPM >= 4.9.0, which every live EL/EPEL branch
+has; see "Spec Feature Availability by RPM Version" in `spec-file.md`.
+
+### 7. Commands That Can Fail Without `|| :`
+rpm treats a failed `%post` as non-critical (the package stays installed),
+but dnf5 reports the whole transaction as failed. A non-zero exit status is
+what matters; output on stderr alone does not fail anything.
+```
+# WRONG
+%post
+some-cache-tool --refresh
+
+# CORRECT - best-effort step must not fail the transaction
+%post
+some-cache-tool --refresh || :
+```
+
+### 8. systemd Macro Scope Mismatch
+The `%systemd_*` macros are for system units in `%{_unitdir}`; the
+`%systemd_user_*` macros are for user units in `%{_userunitdir}`
+(Packaging Guidelines, Scriptlets, "User units"). Using the
+wrong family fails with `Failed to preset unit: Unit X.service does not
+exist` in the scriptlet output. This often comes from copying the
+scriptlets of an adjacent subpackage that ships the other kind of unit.
+
+Check: compare where `%files` installs the unit with the macro family used.
+When switching to `%systemd_post`/`%systemd_preun`, also add `%postun`
+(`%systemd_postun_with_restart` or `%systemd_postun`).
+```
+# WRONG - bluetooth-mesh.service is installed to %{_unitdir}
+%post mesh
+%systemd_user_post bluetooth-mesh.service
+
+# CORRECT
+%post mesh
+%systemd_post bluetooth-mesh.service
+
+%preun mesh
+%systemd_preun bluetooth-mesh.service
+
+%postun mesh
+%systemd_postun_with_restart bluetooth-mesh.service
+```

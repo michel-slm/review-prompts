@@ -149,3 +149,22 @@ dnf repoquery --whatrequires 'libfoo.so.1()(64bit)'
 # Find what provides a given capability
 dnf repoquery --whatprovides 'pkgconfig(foo)'
 ```
+
+### Query Other Releases and Distributions With fedrq
+`fedrq` queries Fedora, EPEL, CentOS Stream, AlmaLinux, Rocky, Oracle
+Linux, UBI, Amazon Linux and ELN without any local repository
+configuration:
+```
+fedrq pkgs -b <branch> -F nevra <pkg>    # package version on a branch
+fedrq whatrequires -b <branch> <pkg>     # reverse dependencies (binary)
+fedrq wrsrc -b <branch> <pkg>            # reverse dependencies (source
+                                         # packages), e.g. for mass rebuilds
+fedrq subpkgs -b <branch> <srpm-name>    # binary packages of a source package
+fedrq download-spec -b <branch> <srpm-name>
+```
+- Branch names: `rawhide`, `fNN`, `epelN`, `epelN-next`, `cNs`, `alN`,
+  `rlN`, `olN`, `ubiN`, `amazonN`, `eln`
+- `epelN` queries only the EPEL repositories; for base OS packages use
+  `cNs` or `alN`/`rlN`
+- EOL branches (e.g. `c8s`, `c7`) can return nothing
+- Tested with fedrq 1.7.0

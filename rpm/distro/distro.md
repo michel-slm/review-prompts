@@ -33,6 +33,8 @@ Some macros exist only in certain distributions:
   - Dynamic BuildRequires: `%generate_buildrequires`
   - `%conf` section (RPM 4.18+)
 - CentOS Stream may not have these features depending on version
+- See "Spec Feature Availability by RPM Version" in `spec-file.md` for
+  RPM versions per release and how to check when a construct was added
 
 ### Weak Dependency Support
 - Fully supported in Fedora
