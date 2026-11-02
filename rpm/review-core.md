@@ -129,6 +129,11 @@ Goal: Eliminate false positives.
 
 ## TASK 5: Reporting
 
+The report supports a human reviewer; it is not an approval or rejection.
+Do not state that a package is approved or that the review flag should be
+set. For Fedora, follow the "AI-Assisted Contributions" section of
+`distro/fedora.md` when the report is posted (disclose AI assistance).
+
 Structure findings by severity:
 
 **CRITICAL**: Security issues, broken dependencies, data loss potential

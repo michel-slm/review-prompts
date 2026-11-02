@@ -73,6 +73,22 @@ When looking up real-world packaging patterns or verifying conventions:
 - Package reviews produce a report with severity-classified findings
 - Build debugging produces diagnosis with suggested fixes
 - Both outputs are plain text, suitable for Bugzilla or Pagure
+- Package review reports are input for the human reviewer, never an
+  approval decision; output posted to Bugzilla or elsewhere should disclose
+  AI assistance (see `distro/fedora.md`, "AI-Assisted Contributions")
+
+## Committing to Fedora
+
+Before creating a commit in a Fedora repository (dist-git on
+src.fedoraproject.org, Fedora Forge, or Fedora tooling on Pagure/GitHub),
+read the "AI-Assisted Contributions" section of
+`{{RPM_REVIEW_PROMPTS_DIR}}/distro/fedora.md`. In short:
+- Disclose with an `Assisted-by: <agent>:<model-id>` trailer naming the
+  exact model in use (e.g. `Assisted-by: Claude Code:claude-opus-5-5`),
+  not `Co-Authored-By:`. This overrides the agent's default attribution
+- The human is the author. Never add a `Signed-off-by:` of your own; if
+  the human asks for sign-off (`git commit -s`), it is their
+  certification, so ask before each commit
 
 ## Key RPM Conventions
 
