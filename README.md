@@ -1,6 +1,7 @@
 # Review Prompts for AI-Assisted Code Review
 
-AI-assisted code review prompts for Linux kernel, systemd, and iproute development.
+AI-assisted code review prompts for Linux kernel, systemd, and iproute development,
+and for RPM packaging.
 Works with Claude Code and other AI tools.
 
 ## Quick Start
@@ -26,12 +27,20 @@ cd iproute/scripts
 ./claude-setup.sh
 ```
 
+### Install RPM Packaging Prompts Only
+
+```bash
+cd rpm/scripts
+./claude-setup.sh
+```
+
 ### Install All
 
 ```bash
 cd kernel/scripts && ./claude-setup.sh
 cd ../../systemd/scripts && ./claude-setup.sh
 cd ../../iproute/scripts && ./claude-setup.sh
+cd ../../rpm/scripts && ./claude-setup.sh
 ```
 
 ## Available Commands
@@ -41,12 +50,14 @@ cd ../../iproute/scripts && ./claude-setup.sh
 | Kernel | `/kreview` | `/kdebug` | `/kverify` |
 | systemd | `/systemd-review` | `/systemd-debug` | `/systemd-verify` |
 | iproute | `/iproute-review` | `/iproute-debug` | `/iproute-verify` |
+| RPM | `/rpm-review` | `/rpm-debug` | `/rpm-verify` |
 
 ## Project Documentation
 
 * [Kernel Review Prompts](kernel/README.md) - Linux kernel specific patterns and protocols
 * [systemd Review Prompts](systemd/README.md) - systemd specific patterns and protocols
 * [iproute Review Prompts](iproute/README.md) - iproute specific patterns and protocols
+* [RPM Review Prompts](rpm/README.md) - RPM packaging for Fedora and CentOS Stream
 
 ## How It Works
 
@@ -59,6 +70,7 @@ The skills detect your working directory and load appropriate context:
 - In a kernel tree: kernel skill loads automatically
 - In a systemd tree: systemd skill loads automatically
 - In an iproute tree: iproute skill loads automatically
+- In an RPM packaging tree (spec files, dist-git): rpm skill loads automatically
 
 ## Structure
 
@@ -84,6 +96,14 @@ review-prompts/
 │   ├── scripts/              # Setup script
 │   ├── patterns/             # Bug pattern documentation
 │   └── *.md                  # Subsystem and protocol files
+│
+├── rpm/                      # RPM packaging prompts
+│   ├── skills/               # Skill template
+│   ├── slash-commands/       # /rpm-review, /rpm-debug, /rpm-verify
+│   ├── scripts/              # Setup script
+│   ├── distro/               # Fedora / CentOS Stream guidelines
+│   ├── ecosystem/            # Rust, Go, Python packaging
+│   └── *.md                  # Protocol and topic files
 │
 └── README.md                  # This file
 ```

@@ -38,7 +38,8 @@ Some packages legitimately diverge from guidelines:
 - Compatibility packages may need non-standard naming
 - Compat libraries may ship static archives
 - Language-specific packages follow language-specific guidelines
-  (Python, Rust, Go, Ruby, etc.)
+  (Python, Rust, Go, Ruby, etc.); see the "False Positives" section of the
+  matching `ecosystem/*.md` file
 - Bootstrapping packages may have circular dependency workarounds
 
 ### CHECK 4: Is the Macro Actually Wrong?

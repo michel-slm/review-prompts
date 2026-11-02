@@ -91,6 +91,7 @@ only inside macro bodies or when lazy evaluation is specifically needed.
 ```
 
 ### Python
+See `ecosystem/python.md` for full Python packaging guidance.
 ```
 # Modern (pyproject.toml)
 %pyproject_wheel     # build wheel
