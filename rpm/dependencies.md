@@ -168,3 +168,44 @@ fedrq download-spec -b <branch> <srpm-name>
   `cNs` or `alN`/`rlN`
 - EOL branches (e.g. `c8s`, `c7`) can return nothing
 - Tested with fedrq 1.7.0
+
+#### fedrq Pitfalls
+Most of these fail silently: a wrong subcommand, flag or formatter
+inside a pipeline with `2>/dev/null` looks like a legitimate empty
+answer. Sanity-check the count at each stage of a pipeline.
+
+Queries and formatters:
+- There is no `whatprovides` subcommand
+  (https://forge.fedoraproject.org/packaging/fedrq/issues/119). Resolve a
+  capability to its providers with `fedrq pkgs -P <capability> -F name`
+  (or `-F source`)
+- `-F source` already prints bare source package names
+  (`evolution-data-server`), not NVRs. Do not strip a "version-release"
+  suffix with `sed 's/-[^-]*-[^-]*$//'`; it mangles hyphenated names
+  (`evolution-data-server` becomes `evolution`)
+- `-F source_name` is `(none)` for source RPMs, so with `whatrequires`
+  (whose results include source packages via BuildRequires) use
+  `-F source`. Filter `(none)` out of results in general
+- `-F requires` lists dependency strings; rich/boolean dependencies start
+  with `(` and must be handled before feeding the list back into
+  `pkgs -P`
+- BuildRequires-side reverse dependencies: restrict to source packages
+  with `-A src`, e.g.
+  `fedrq whatrequires -b rawhide -A src -F name libfoo-devel 'pkgconfig(libfoo)'`
+
+Architectures:
+- Queries use the host's architecture. On an aarch64 machine,
+  x86_64-only packages are invisible unless `--forcearch x86_64` is
+  given. For reverse-dependency sweeps (e.g. a rebuild list), take the
+  union over the architectures that matter; packages with
+  `ExclusiveArch` appear only on some
+
+Koji repositories:
+- `-r @koji:<tag>` indexes binary RPMs only, so `subpkgs -S` returns
+  nothing for a side tag. Use `-r @koji-src:<tag>` for source RPMs
+  (e.g. BuildRequires queries); `fedrq pkgs -r @koji:<tag> '*'` lists the
+  tag's binaries, including inherited ones
+- A side tag repo is standalone: do not combine `-b` with
+  `-r @koji:<tag>`
+- EPEL 10 `@testing` repositories are not supported yet (no metalinks
+  exist for `epel10`); such queries fail silently
