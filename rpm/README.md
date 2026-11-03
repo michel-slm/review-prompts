@@ -36,7 +36,8 @@ The prompts automatically detect the target distribution from context:
 
 | File | Purpose | When Loaded |
 |------|---------|-------------|
-| **review-core.md** | Main review protocol | Always (entry point) |
+| **review-core.md** | Main review protocol | Reviews (entry point) |
+| **debugging.md** | Build failure debugging protocol | Debugging (entry point) |
 | **technical-patterns.md** | Core RPM patterns | Always (loaded first) |
 | **false-positive-guide.md** | False positive elimination | During verification |
 | **spec-file.md** | Spec file structure | Spec file reviews |
@@ -47,6 +48,14 @@ The prompts automatically detect the target distribution from context:
 | **distro/distro.md** | Distribution detection | Always (after context detection) |
 | **distro/fedora.md** | Fedora guidelines | Fedora targets |
 | **distro/centos-stream.md** | CentOS Stream guidelines | CentOS/RHEL targets |
+| **ecosystem/ecosystem.md** | Language ecosystem detection | Always (after context detection) |
+| **ecosystem/rust.md** | Rust / cargo-rpm-macros | Rust packages |
+| **ecosystem/golang.md** | Go / go-rpm-macros / go-vendor-tools | Go packages |
+| **ecosystem/python.md** | Python / pyproject-rpm-macros | Python packages |
+
+Each ecosystem file has review checks, common build failures, and
+ecosystem-specific false positives, so it is shared by the review, debug,
+and verify workflows.
 
 ## Integration
 

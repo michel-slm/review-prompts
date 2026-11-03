@@ -35,10 +35,11 @@ When asked to review an RPM spec file or built package:
 3. Load distribution-specific files as directed by review-core.md
 
 ### Build Debugging
-When asked to debug a build failure or packaging issue:
-1. Load `{{RPM_REVIEW_PROMPTS_DIR}}/review-core.md`
-2. Identify the failure type (build, dependency, scriptlet, etc.)
-3. Load relevant technical files
+When asked to debug a build failure (rpmbuild, mock, koji, copr), FTBFS
+bug, or packaging issue:
+1. Load `{{RPM_REVIEW_PROMPTS_DIR}}/debugging.md`
+2. Follow the complete debugging protocol defined there
+3. Load ecosystem and topic files as directed by debugging.md
 
 ### Distribution Context
 When working on RPM packages for specific distributions, load the appropriate
@@ -49,7 +50,10 @@ context files from `{{RPM_REVIEW_PROMPTS_DIR}}/`:
 2. Read `{{RPM_REVIEW_PROMPTS_DIR}}/distro/distro.md` and load matching
    distribution guides
 
-3. Select topic-specific files as needed:
+3. Read `{{RPM_REVIEW_PROMPTS_DIR}}/ecosystem/ecosystem.md` and load matching
+   language ecosystem guides (Rust, Go, Python, ...)
+
+4. Select topic-specific files as needed:
 
 | Topic | Trigger | File |
 |-------|---------|------|
@@ -60,6 +64,10 @@ context files from `{{RPM_REVIEW_PROMPTS_DIR}}/`:
 | Licensing | License:, %license, SPDX | licensing.md |
 | Fedora | .fc* dist, %{?fedora} | distro/fedora.md |
 | CentOS Stream | .el* dist, %{?rhel} | distro/centos-stream.md |
+| Rust | %cargo_*, rust-* name, Cargo.toml | ecosystem/rust.md |
+| Go | %gometa, %gobuild, golang-* name, go.mod | ecosystem/golang.md |
+| Python | %pyproject_*, %py3_*, python-* name | ecosystem/python.md |
+| Build failures | build logs, FTBFS | debugging.md |
 
 ## Reference Data
 

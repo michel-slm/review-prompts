@@ -11,7 +11,8 @@ Before beginning review:
 1. ALWAYS load `technical-patterns.md` first
 2. Load `distro/distro.md` and detect the target distribution
 3. Load distribution-specific files based on detected context (see triggers below)
-4. Load additional files based on review content (see conditional loading)
+4. Load `ecosystem/ecosystem.md` and any matching language ecosystem files
+5. Load additional files based on review content (see conditional loading)
 
 ## TASK 0: Context Detection
 
@@ -38,6 +39,7 @@ Load distribution files based on detected context:
 | %pre, %post, %preun, %postun, %pretrans, %posttrans | `scriptlets.md` |
 | BuildRequires, Requires, Provides, Conflicts, Obsoletes | `dependencies.md` |
 | License:, %license, SPDX | `licensing.md` |
+| %cargo_*, %gometa/%gobuild, %pyproject_*/%py3_* (see index) | `ecosystem/ecosystem.md` + matching file |
 
 ## TASK 2: Spec File Review Checklist
 
@@ -121,6 +123,7 @@ Goal: Eliminate false positives.
 2. If issues found:
    - Load `false-positive-guide.md`
    - Apply each verification check
+   - Apply the "False Positives" section of any loaded ecosystem file
    - Remove any false positives from findings
 3. When uncertain whether a pattern is correct, consult real-world examples:
    - For Fedora: download and search the spec archive at

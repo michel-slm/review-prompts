@@ -146,3 +146,43 @@ Requires: libfoo%{?_isa} >= 1.2
 # everything except s390x
 %endif
 ```
+
+## Spec Feature Availability by RPM Version
+
+Before using a newer spec construct on older branches (EPEL, CentOS
+Stream), check which RPM version introduced it and which RPM version the
+target release ships.
+
+### RPM Version per Release
+
+Checked 2026-11-02 with `fedrq pkgs -b <branch> -F nevra rpm`:
+
+| Branch | RPM |
+|--------|-----|
+| EL8 (`al8`, AlmaLinux) | 4.14.3 |
+| c9s | 4.16.1.3 |
+| c10s | 4.19.1.1 |
+| f44 | 6.0.2 |
+| f45 | 6.1.0 |
+| rawhide | 6.1.0 |
+
+`c8s` and `c7` return nothing because they are EOL and their mirrors are
+gone. EL7 (RPM 4.11) and EL6 (RPM 4.8) are unverified, and both releases
+are EOL. Re-check with `fedrq` when it matters, since these move.
+
+### Constructs and the RPM Version That Introduced Them
+
+| Construct | Introduced | Notes |
+|-----------|------------|-------|
+| `OrderWithRequires:` | 4.9.0 | Upstream commit 5c43095e1 (2010-12-13, "Implement transaction ordering hinting"); absent in rpm-4.8.1-release. Parsed like `Requires:`, so it takes the same qualifiers (`(post)` etc.); `%{?systemd_ordering}` relies on this |
+
+### Finding When a Construct Was Introduced
+
+Use rpm's git history:
+```
+git log -S'<keyword>' --reverse          # first commit mentioning it
+git tag --contains <commit>              # first release containing it
+git grep -i '<keyword>' rpm-X.Y.Z-release -- build/   # present in a release?
+```
+Upstream docs and the manual give the version for some constructs, but
+not all.
