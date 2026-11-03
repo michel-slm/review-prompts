@@ -73,13 +73,13 @@ https://docs.fedoraproject.org/en-US/council/policy/ai-contribution-policy/
 ### Commits
 - The human contributor is the author and is fully accountable. Never set
   an AI agent as the commit author or co-author
-- Disclose AI assistance with an `Assisted-by:` trailer. It is required
-  when a significant part of the contribution is taken from the tool
-  without changes, and recommended otherwise
+- Disclose AI assistance. Disclosure is required when a significant part
+  of the contribution is taken from the tool without changes, and
+  recommended otherwise. For git, the policy's recommended method is an
+  `Assisted-by:` commit message trailer
 - Use `Assisted-by:`, NOT `Co-Authored-By:`, even if the agent's default
-  attribution says otherwise. This matches the Linux kernel convention
-- Recommended format, following the kernel's
-  `Assisted-by: AGENT_NAME:MODEL_VERSION [TOOL1] [TOOL2]`:
+  attribution says otherwise
+- Recommended format, naming the agent and the model:
   ```
   Assisted-by: Claude Code:claude-opus-5-5
   ```
@@ -88,6 +88,16 @@ https://docs.fedoraproject.org/en-US/council/policy/ai-contribution-policy/
   tooling (git, editors, the build system) does not belong there.
   Fedora's own examples are free-form (`Assisted-by: generic LLM
   chatbot`), so any format that identifies the tool is acceptable
+- This is the Linux kernel's original format,
+  `Assisted-by: AGENT_NAME:MODEL_VERSION [TOOL1] [TOOL2]` (78d979db6cef,
+  2025-12-23, Linux 7.0). The kernel later reduced it to
+  `Assisted-by: LLM [TOOL1] [TOOL2]` (816d9992d9ed, 2026-07-01, Linux
+  7.3), then removed the tag in favour of describing tool use in the
+  cover letter (1e035297ffda, 2026-10-13, Linux 7.4). Fedora still
+  recommends the trailer, with the rationale that information about the
+  use of AI tools "will help us evaluate their impact". Naming the agent
+  and model serves that and a bare `LLM` does not, so the original
+  kernel format remains the best fit
 - The agent must never add a `Signed-off-by:` of its own: a DCO sign-off
   is a certification only a person can make. If the human directs the
   agent to commit with sign-off (`git commit -s`), the sign-off and the
