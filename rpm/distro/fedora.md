@@ -61,6 +61,59 @@ A Fedora package review typically checks:
 - Missing `%check` when upstream has tests
 - Static libraries shipped without `-static` subpackage
 
+## AI-Assisted Contributions
+
+Fedora's AI-Assisted Contributions Policy (Fedora Council, v1.0,
+2025-10-24) applies to anything contributed to the Fedora Project,
+including EPEL: dist-git commits, pull requests to Fedora-hosted tooling
+and docs, Bugzilla comments, and package reviews.
+
+https://docs.fedoraproject.org/en-US/council/policy/ai-contribution-policy/
+
+### Commits
+- The human contributor is the author and is fully accountable. Never set
+  an AI agent as the commit author or co-author
+- Disclose AI assistance with an `Assisted-by:` trailer. It is required
+  when a significant part of the contribution is taken from the tool
+  without changes, and recommended otherwise
+- Use `Assisted-by:`, NOT `Co-Authored-By:`, even if the agent's default
+  attribution says otherwise. This matches the Linux kernel convention
+- Recommended format, following the kernel's
+  `Assisted-by: AGENT_NAME:MODEL_VERSION [TOOL1] [TOOL2]`:
+  ```
+  Assisted-by: Claude Code:claude-opus-5-5
+  ```
+  Name the agent and the exact model actually in use, not the model
+  family or a guess. Additional non-obvious tools may follow; everyday
+  tooling (git, editors, the build system) does not belong there.
+  Fedora's own examples are free-form (`Assisted-by: generic LLM
+  chatbot`), so any format that identifies the tool is acceptable
+- The agent must never add a `Signed-off-by:` of its own: a DCO sign-off
+  is a certification only a person can make. If the human directs the
+  agent to commit with sign-off (`git commit -s`), the sign-off and the
+  certification are the human's, so ask before each commit rather than
+  committing unprompted
+- With `%autochangelog` (rpmautospec), the commit message feeds the RPM
+  changelog; keep the subject line a meaningful changelog entry and put the
+  trailer at the end of the message body
+
+### Other contributions
+- Where authorship is normally indicated but there is no git history
+  (Bugzilla comments, review reports, wiki pages, docs without trailers),
+  disclose AI assistance in the text itself, e.g. a short note at the top
+  or bottom of the comment
+- Routine grammar/spelling/wording help does not need disclosure
+
+### Reviews and evaluation
+- AI analysis MAY assist human reviewers
+- AI MUST NOT be the sole or final arbiter of a substantive or subjective
+  judgment on a contribution. In package reviews, the decision to approve
+  (setting `fedora-review+`) and to sponsor a packager stays with the
+  human reviewer
+- AI MUST NOT be used to evaluate a person's standing in the community
+- Objective automated checks (CI, rpmlint, fedora-review tooling, tests)
+  are not affected
+
 ## Reference Data
 
 ### Fedora Spec Archive
