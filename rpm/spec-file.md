@@ -94,6 +94,25 @@ Patch1: add-feature.patch
 %patch 1 -p1
 ```
 
+### Patch Provenance
+When reusing patches from another packager's COPR, SRPM or another
+distribution, check where each patch came from before carrying it:
+the patch header (`From:`, `Subject:`, `X-Git-Url:`), comments next to
+the `Patch:` line, and the upstream tracker. A patch found in someone's
+COPR is often an upstream commit by a different author, or that
+packager's own upstream commit adapted to an older release.
+- Credit the real author: the patch file keeps its upstream `From:`;
+  the packager who carries it authors the dist-git commit
+- Link the upstream commit, merge request or bug in a comment above the
+  `Patch:` line, not just the COPR or distribution it was found in
+- Say "backport of" when the patch was adapted to the packaged release
+  (reformatted, rebased, autotools or build-system changes)
+```
+# Backport of upstream commit 1a2b3c4 (merged in 2.4.0), adapted to 2.3
+# https://gitlab.example.org/project/-/commit/1a2b3c4
+Patch0: project-2.3-fix-foo.patch
+```
+
 ## Subpackage Organization
 
 ### Common Subpackage Patterns
