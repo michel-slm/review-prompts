@@ -161,6 +161,8 @@ fedrq wrsrc -b <branch> <pkg>            # reverse dependencies (source
                                          # packages), e.g. for mass rebuilds
 fedrq subpkgs -b <branch> <srpm-name>    # binary packages of a source package
 fedrq download-spec -b <branch> <srpm-name>
+fedrq pkgs -r @baseurl:file://<dir> '*' # a local repository, e.g. mock
+                                         # results with repodata
 ```
 - Branch names: `rawhide`, `fNN`, `epelN`, `epelN-next`, `cNs`, `alN`,
   `rlN`, `olN`, `ubiN`, `amazonN`, `eln`
@@ -200,12 +202,19 @@ Architectures:
   union over the architectures that matter; packages with
   `ExclusiveArch` appear only on some
 
-Koji repositories:
+Koji and local repositories:
 - `-r @koji:<tag>` indexes binary RPMs only, so `subpkgs -S` returns
   nothing for a side tag. Use `-r @koji-src:<tag>` for source RPMs
   (e.g. BuildRequires queries); `fedrq pkgs -r @koji:<tag> '*'` lists the
   tag's binaries, including inherited ones
 - A side tag repo is standalone: do not combine `-b` with
   `-r @koji:<tag>`
+- `-r @baseurl:file://<dir>` likewise replaces the branch's
+  repositories rather than adding to them: with `-b rawhide` as well,
+  rawhide's own packages are not found. Query the two separately
+- A `mock --localrepo` results directory indexes binary RPMs only: the
+  SRPMs sit beside each build but are not in its repodata, so `-A src`
+  returns nothing. Read a build's BuildRequires from its SRPM with
+  `rpm -qp --requires <srpm>`
 - EPEL 10 `@testing` repositories are not supported yet (no metalinks
   exist for `epel10`); such queries fail silently
