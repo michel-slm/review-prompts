@@ -185,6 +185,24 @@ For each diagnosed failure provide:
 6. For temporary workarounds (skipped tests, ExcludeArch, version pin):
    a comment in the spec explaining why and when it can be removed
 
+### Sending the Fix Upstream
+- Check for upstream's issue template (`.gitlab/issue_templates/`,
+  `.github/ISSUE_TEMPLATE/`) and fill in its sections rather than writing
+  a free-form report; check for a merge/pull request template the same
+  way. Respect what the template asks for: a project that supports only
+  its latest version needs the report to say whether `main` is affected,
+  not only the packaged release
+- Order the steps so the distribution's pull request never needs
+  editing after it is opened. In Fedora, every push or force-push to a
+  dist-git PR re-runs Fedora CI (scratch build and Testing Farm plans),
+  discarding the earlier results and using scarce capacity:
+  1. Open the upstream issue and MR/PR first, citing the local build
+     results
+  2. Open the dist-git PR with the spec comment already linking the
+     upstream MR/PR (see `spec-file.md`, Patch Provenance)
+  3. Then edit the upstream MR/PR description to link the dist-git PR;
+     editing a description does not trigger CI
+
 Do not propose:
 - Disabling `%check` entirely to fix one failing test
 - `AutoReqProv: no` to fix a single bad generated dependency
