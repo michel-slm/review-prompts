@@ -42,6 +42,7 @@ build (dependency resolution, install-time scriptlet failures).
 | `Missing build-id`, `find-debuginfo` errors, `Empty %files file debugsourcefiles.list` | debuginfo | Binary not built with distro flags, stripped by upstream build system, Go/Rust built without the ecosystem macros, noarch package with no binaries |
 | Package builds, but `dnf install` fails: `nothing provides` | Dependency generation | Auto-generated requires on something not packaged, private library leaked into requires/provides |
 | mock `--postinst`: root.log `ERROR backend.py: Installation of built packages failed`, preceded by `Transaction failed: Rpm transaction failed` | Scriptlets (post-build install) | A scriptlet exits non-zero: calls a binary not installed in the minimal root (exit 127), or a command without `\|\| :`. The scriptlet output is in root.log (`>>> Running %post scriptlet`, `Non-critical error in %post scriptlet`, `Scriptlet output:`), not build.log; the terminal only shows the summary line. rpm treats a failed `%post` as non-critical, but dnf5 reports the transaction as failed, so mock fails. Koji does not install built packages, so it does not catch this; real minimal installs (containers) do. See `scriptlets.md` |
+| mock `--postinstall`: `conflicting requests` for the package's own subpackages | Post-build install (not a bug) | Subpackages that conflict by design (alternative backends, e.g. asterisk's `voicemail-plain` / `-odbc` / `-imap`); `--postinstall` installs every built RPM in one transaction. Check the spec's `Conflicts:` before treating it as a regression, and test installability with a non-conflicting subset |
 | Package installs with scriptlet errors | Scriptlets | See `scriptlets.md` |
 | rpmlint `E:` / `W:` lines on the SRPM or built RPMs | rpmlint | Real packaging issue, or rpmlint false positive (check before fixing) |
 
@@ -109,6 +110,36 @@ rpmbuild -bp foo.spec                    # %prep only
 rpmbuild -bi --short-circuit foo.spec    # re-run %install only
 rpmbuild -bl foo.spec                    # check %files only
 ```
+
+### Iterating on a Failed mock Build
+A source fix can be tried in the failed build's tree in minutes instead
+of a full rebuild, as long as that tree still exists:
+- Plain `mock --rebuild` keeps the chroot after a failure by default,
+  but `fedpkg mockbuild` (and anything passing `--resultdir`) cleans it.
+  Build with `--no-cleanup-after` (`fedpkg mockbuild -N`) when you
+  expect to iterate, and use a separate chroot (`--uniqueext <name>`) for
+  other builds meanwhile, since the next build in the same chroot cleans
+  it
+- Apply the patch in the unpacked tree:
+  ```
+  mock -r <cfg> --copyin fix.patch /builddir/
+  mock -r <cfg> --unpriv --chroot \
+      'cd /builddir/build/BUILD/<pkg>-<ver>-build/<srcdir> && patch -p1 < /builddir/fix.patch'
+  ```
+- Preferred: re-run `%build` through rpmbuild, with its environment:
+  `mock -r <cfg> --short-circuit=build <srpm>` (`rpmbuild -bc
+  --short-circuit`; implies `--no-clean`; checking only, it produces no
+  usable packages). For meson/cmake, the configure step in `%build` may
+  need the build directory removed first
+- Running the build tool directly (`ninja -C redhat-linux-build <target>`,
+  `make -C <dir>`) is fastest for one target, but lacks rpmbuild's
+  environment: `%set_build_flags` (`CFLAGS` and friends) is not applied,
+  and Fedora's `redhat-package-notes` linker spec reads `RPM_ARCH`,
+  `RPM_PACKAGE_NAME`, `RPM_PACKAGE_VERSION` and `RPM_PACKAGE_RELEASE`,
+  failing with `environment variable 'RPM_ARCH' not defined`. Export
+  them (build.log's `+ export ...` lines have the values) or build only
+  the failing object
+- Confirm with a full clean rebuild before claiming the fix
 
 Inspect macro expansion in the target environment:
 
