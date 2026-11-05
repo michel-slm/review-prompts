@@ -31,7 +31,8 @@ when answering CVE bugs filed against a package.
   commits (one per backport branch) an ancestor of the release tag?
   - Local clone: `git merge-base --is-ancestor <fix> <tag>` (exit 0 means
     the tag contains the fix)
-  - GitHub: `gh api repos/<owner>/<repo>/compare/<tag>...<fix> --jq .status`;
+  - GitHub: `gh api repos/<owner>/<repo>/compare/<tag>...<fix> --jq .status`
+    with the full commit SHA (the API may not resolve short ones);
     `behind` or `identical` means the tag contains the fix
 - Lists derived from git are not exact. OSV's affected-version lists
   can miss tags, e.g. an expedited release whose tag is off the branch
