@@ -113,6 +113,39 @@ packager's own upstream commit adapted to an older release.
 Patch0: project-2.3-fix-foo.patch
 ```
 
+### Backporting Upstream Commits
+Carry each upstream commit as its own patch, in `git format-patch` form,
+from a URL that `spectool -g` can download, rather than one
+hand-combined diff. This keeps upstream's authorship and commit
+messages, and a reviewer can check each patch by fetching it and
+comparing (`spectool -g`, `cmp`). Name the local file after what the
+patch does with a `#/` suffix (the URL already has the hash), and commit
+the downloaded file under that name:
+```
+# GitHub (GitLab: <project-url>/-/commit/<sha>.patch)
+Patch:  %{url}/commit/<sha>.patch#/%{name}-fix-foo.patch
+# gitweb: a=patch serves format-patch output
+Patch:  https://<host>/?p=<repo>.git;a=patch;h=<sha>#/%{name}-fix-foo.patch
+```
+- Apply them in upstream order. When upstream needed several attempts,
+  skip pairs that cancel out (a commit and its revert; check that
+  `git diff <commit>^ <revert>` is empty) and say so in the comment
+- If a patch needs light edits to apply to the packaged release (e.g. a
+  `NEWS`/`CHANGELOG` hunk that conflicts), carry it as a local file
+  instead, with the upstream URL in the comment and what was edited
+- Look for the fix upstream and credit its author first (see
+  `debugging.md`, Sending the Fix Upstream)
+
+Example (claws-mail 4.4.0, libical 4 support):
+```
+# vCalendar plugin: build with libical 4 (claws-mail bug 4942), and keep
+# building with libical 3; upstream commits, in order (two reverted
+# attempts in between cancel out)
+Patch12: https://git.claws-mail.org/?p=claws.git;a=patch;h=1ad8482186cdcd056047aa5f9e2d495e6296a1bb#/claws-mail-vcalendar-libical4.patch
+Patch13: https://git.claws-mail.org/?p=claws.git;a=patch;h=f754d8d9ae50f2beb1385798c541af623d5c2820#/claws-mail-vcalendar-libical3-compat.patch
+Patch14: https://git.claws-mail.org/?p=claws.git;a=patch;h=9b6b82879c75ceb52d93eaa137eafe04b258136e#/claws-mail-vcalendar-libical4-version-check.patch
+```
+
 ## Subpackage Organization
 
 ### Common Subpackage Patterns
