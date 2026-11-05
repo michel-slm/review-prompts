@@ -95,11 +95,14 @@ What a trailing (`epel10.x`) branch takes:
   current version instead of working around it; a package can stop
   being updatable in a trailing release (e.g. a Rust application whose
   new version needs a crate version only `epel10` has)
-- Rust `-devel` packages have a blanket update exception in Fedora
-  stable releases (FESCo Updates Policy, "Rust -devel packages"), which
-  also applies to EPEL 9 but, for EPEL 10, only to `epel10`: crates in
-  trailing branches are not updated. This is current practice; the EPEL
-  docs do not record it
+- Rust `-devel` (library-only) packages have a blanket update exception
+  in Fedora stable releases (FESCo Updates Policy, "Rust -devel
+  packages"). The EPEL Steering Committee granted them a permanent
+  exception in the leading branches only, `epel9` and `epel10`
+  (https://forge.fedoraproject.org/epel/steering/issues/316, meeting of
+  2025-02-26; not yet in the EPEL docs). There is no exception for
+  trailing `epel10.x` branches, so crates there are not updated; an
+  update that needs one requires its own Steering Committee ticket
 - A breaking (incompatible) update, typically a security fix that
   cannot be backported, needs the EPEL incompatible upgrades process
   (`epel-policy-incompatible-upgrades.adoc`,
