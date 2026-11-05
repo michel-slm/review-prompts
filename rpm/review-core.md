@@ -39,6 +39,7 @@ Load distribution files based on detected context:
 | %pre, %post, %preun, %postun, %pretrans, %posttrans | `scriptlets.md` |
 | BuildRequires, Requires, Provides, Conflicts, Obsoletes | `dependencies.md` |
 | License:, %license, SPDX | `licensing.md` |
+| CVE bugs, advisories, `Provides: bundled(...)` copies | `security.md` |
 | %cargo_*, %gometa/%gobuild, %pyproject_*/%py3_* (see index) | `ecosystem/ecosystem.md` + matching file |
 
 ## TASK 2: Spec File Review Checklist
