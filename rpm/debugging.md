@@ -236,9 +236,12 @@ For each diagnosed failure provide:
   its latest version needs the report to say whether `main` is affected,
   not only the packaged release
 - Order the steps so the distribution's pull request never needs
-  editing after it is opened. In Fedora, every push or force-push to a
-  dist-git PR re-runs Fedora CI (scratch build and Testing Farm plans),
-  discarding the earlier results and using scarce capacity:
+  editing after it is opened. In Fedora, a push or force-push to a
+  dist-git PR discards its Fedora CI results and re-runs CI (scratch
+  build and Testing Farm plans), using scarce capacity; a force-push can
+  also clear the results without starting a new run, which then needs a
+  manual retrigger (`distro/fedora.md`, Fedora CI on Dist-git Pull
+  Requests):
   1. Open the upstream issue and MR/PR first, citing the local build
      results
   2. Open the dist-git PR with the spec comment already linking the

@@ -124,6 +124,34 @@ https://docs.fedoraproject.org/en-US/council/policy/ai-contribution-policy/
 - Objective automated checks (CI, rpmlint, fedora-review tooling, tests)
   are not affected
 
+## Fedora CI on Dist-git Pull Requests
+
+Fedora CI on dist-git PRs runs through Packit: a Koji scratch build,
+then Testing Farm plans (installability, rpmlint, rpminspect,
+rmdepcheck, license-validate, and the package's own TMT plans as
+`custom`). It is retriggered with PR comments
+(https://packit.dev/fedora-ci/retriggering):
+```
+/packit-ci scratch-build          # rerun the scratch build (packagers only)
+/packit-ci test                   # rerun all tests (packagers only)
+/packit-ci test <id>              # one plan: installability, rpmlint,
+                                  # rpminspect, rmdepcheck,
+                                  # license-validate, custom
+/packit-ci test --target eln      # restrict to one target
+/packit-ci help                   # list commands
+```
+- The prefix is `/packit-ci`; `/packit build` and `/packit test` belong
+  to Packit's upstream service and do nothing for Fedora CI on dist-git
+- A force-push can clear the CI flags without starting a new run;
+  retrigger with `/packit-ci scratch-build` (tests follow a successful
+  scratch build automatically)
+- Testing Farm plans often fail for infrastructure reasons unrelated to
+  the package (e.g. rmdepcheck or license-validate erroring during
+  container setup, the rpmlint harness crashing with
+  `No module named 'copr'`). Read the plan's log before treating a red
+  flag as a package problem, and retry just that plan with
+  `/packit-ci test <id>`
+
 ## Reference Data
 
 ### Fedora Spec Archive
