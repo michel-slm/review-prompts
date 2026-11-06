@@ -97,6 +97,29 @@ Binary packages additionally collect dependency licenses:
 - [ ] Skipped tests use `%cargo_test -- -- --skip <name>` (or
       `--exact`) with a comment explaining why, rather than disabling `%check`
 
+## Security Advisories (RUSTSEC)
+
+A RUSTSEC advisory's "patched" version may only deprecate the vulnerable
+API rather than remove or fix it. Example: RUSTSEC-2026-0386 (tokio
+`AsyncFd::new` and related constructors violate I/O safety, an
+"unsound" advisory) counts tokio 1.53.3 and 1.54.1 as patched, but
+their CHANGELOG entry is "io: deprecate
+`AsyncFd::{new, with_interest, try_new, try_with_interest}`" plus new
+safe `AsyncFd::register` / `register_with_interest`; the unsound
+constructors are still there.
+- Bumping to the patched version is still right, but it is not the
+  whole mitigation: read the advisory and the fixed release's CHANGELOG
+  for what actually changed
+- Check whether anything still calls the deprecated API. In the
+  package's own code, rustc's `deprecated` lint reports it (build with
+  all features enabled). In dependencies it never does, because cargo
+  caps lints for non-local crates (`--cap-lints allow`), so grep the
+  vendored sources or `~/.cargo/registry/src` for the locked versions
+- A deprecate-only fix may not be filed as a security update in Bodhi
+  (the tokio updates were deliberately left with update type
+  `unspecified`, not `security`), so don't wait for one: compare the
+  advisory's patched versions with what is in stable
+
 ## Build Failures
 
 | Symptom | Likely cause | Fix |
