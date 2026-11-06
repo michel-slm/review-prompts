@@ -74,6 +74,46 @@ Requires: python3-foo >= 2.0
   in base EL
 - Check if `%pyproject_*` macros are available via EPEL packages
 
+### EPEL 10 Minor Releases
+EPEL 10 has a dist-git branch and repository per RHEL 10 minor version
+(EPEL docs, `branches.adoc`):
+- `epel10` builds for the leading minor version (dist tag `.el10_x` of
+  the upcoming minor, against CentOS Stream 10). This is where version
+  updates go
+- `epel10.x` branches build for the trailing minor versions, against the
+  matching RHEL 10.x. A trailing branch goes end-of-life once its minor
+  version is no longer the leading release; Bodhi names them
+  `EPEL-10.x`, so `EPEL-10.4` is not the same thing as fedrq's
+  `-b epel10`
+- Builds are tagged forward to newer minor versions automatically at
+  mass branching, never backward (`build-tagging.adoc`)
+
+What a trailing (`epel10.x`) branch takes:
+- In general only security fixes, and only non-breaking ones
+- Not version bumps, and not updates that need a breaking dependency
+  update the trailing release does not have. Leave the branch at its
+  current version instead of working around it; a package can stop
+  being updatable in a trailing release (e.g. a Rust application whose
+  new version needs a crate version only `epel10` has)
+- Rust `-devel` (library-only) packages have a blanket update exception
+  in Fedora stable releases (FESCo Updates Policy, "Rust -devel
+  packages"). The EPEL Steering Committee granted them a permanent
+  exception in the leading branches only, `epel9` and `epel10`
+  (https://forge.fedoraproject.org/epel/steering/issues/316, meeting of
+  2025-02-26; not yet in the EPEL docs). There is no exception for
+  trailing `epel10.x` branches, so crates there are not updated; an
+  update that needs one requires its own Steering Committee ticket
+- A breaking (incompatible) update, typically a security fix that
+  cannot be backported, needs the EPEL incompatible upgrades process
+  (`epel-policy-incompatible-upgrades.adoc`,
+  https://docs.fedoraproject.org/en-US/epel/epel-policy-incompatible-upgrades/):
+  epel-devel thread and Bugzilla bug, an EPEL Steering Committee issue
+  approved at a weekly meeting, epel-announce mails when submitting and
+  when pushing stable, at least a week in testing without autopush. This
+  applies to incompatible upgrades in any EPEL branch, `epel10`
+  included; non-security incompatible updates are not allowed at all
+  (ship a parallel package such as `foo2` instead)
+
 ## Build System Differences
 
 ### CentOS Stream Build Pipeline
