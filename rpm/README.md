@@ -45,6 +45,7 @@ The prompts automatically detect the target distribution from context:
 | **scriptlets.md** | Scriptlet safety | Scriptlet review |
 | **dependencies.md** | Dependency management | Dependency issues |
 | **licensing.md** | License handling | License review |
+| **security.md** | Security advisory triage | CVE bugs, bundled copies |
 | **distro/distro.md** | Distribution detection | Always (after context detection) |
 | **distro/fedora.md** | Fedora guidelines | Fedora targets |
 | **distro/centos-stream.md** | CentOS Stream guidelines | CentOS/RHEL targets |

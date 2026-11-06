@@ -62,6 +62,7 @@ context files from `{{RPM_REVIEW_PROMPTS_DIR}}/`:
 | Scriptlets | %pre, %post, %preun, %postun | scriptlets.md |
 | Dependencies | Requires, BuildRequires, Provides | dependencies.md |
 | Licensing | License:, %license, SPDX | licensing.md |
+| Security advisories | CVE bugs, bundled copies, advisory triage | security.md |
 | Fedora | .fc* dist, %{?fedora} | distro/fedora.md |
 | CentOS Stream | .el* dist, %{?rhel} | distro/centos-stream.md |
 | Rust | %cargo_*, rust-* name, Cargo.toml | ecosystem/rust.md |
