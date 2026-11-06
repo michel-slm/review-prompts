@@ -217,6 +217,18 @@ For each diagnosed failure provide:
    a comment in the spec explaining why and when it can be removed
 
 ### Sending the Fix Upstream
+- Before writing a fix, look for an existing one: the same fix in a
+  sibling or source project (code is often copied between projects, e.g.
+  phosh's calendar-server is derived from gnome-shell's), upstream's own
+  tree and open MRs/PRs, other distributions' packages, COPRs
+- When a fix is reused or closely followed, credit its author:
+  - If the project uses the sign-off (DCO) convention and the patch is
+    essentially identical to the original, keep the original author as
+    the commit author and add your own `Signed-off-by:` (DCO clause (b),
+    "based upon previous work"). Some projects expect the author's own
+    sign-off as well; if the original has none, say so or ask
+  - Otherwise, name the author in the commit message and link the
+    original commit, e.g. `Based on <hash> ("<subject>") by <name>`
 - Check for upstream's issue template (`.gitlab/issue_templates/`,
   `.github/ISSUE_TEMPLATE/`) and fill in its sections rather than writing
   a free-form report; check for a merge/pull request template the same
