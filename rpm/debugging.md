@@ -237,14 +237,17 @@ For each diagnosed failure provide:
   not only the packaged release
 - Run the project's own checks before pushing. CONTRIBUTING and the CI
   configuration (`.github/workflows/`, `.gitlab-ci.yml`, `.packit.yaml`)
-  name the linters and tests; run the same ones locally. Some report
+  name the linters and tests; run the same tools locally. Some report
   only what is new relative to the base branch, e.g. mock runs ruff and
   pylint through `vcs-diff-lint` (packaged in Fedora, uses `csdiff`).
-  Where such a tool cannot run locally, approximate it: run the linters
+  Only where such a tool cannot run, fall back to running the linters
   with the repository's configs on the base branch (`git archive`) and
-  on the working tree, and diff the messages. A pre-existing message
-  whose count merely changes (`too-many-arguments` 11 -> 12) is not a
-  new finding
+  on the working tree and comparing the output. Count each message
+  rather than comparing sets: a second copy of an existing warning
+  (another pylint R1702 too-many-nested-blocks in the same function)
+  has the same text and disappears in a set comparison. A pre-existing
+  message whose numbers merely change (`too-many-arguments` 11 -> 12)
+  is not a new finding
 - When a fix makes a destructive action depend on a condition (kill
   leftover processes only if no other run uses the chroot), test the
   condition changing between the check and the action, not only holding
