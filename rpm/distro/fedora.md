@@ -152,6 +152,36 @@ rmdepcheck, license-validate, and the package's own TMT plans as
   flag as a package problem, and retry just that plan with
   `/packit-ci test <id>`
 
+## Before Creating a Side Tag Update
+
+While a side tag is open, other maintainers keep building the same
+packages in the plain target (e.g. rawhide). If the target's build of a
+package sorts above the side tag's, the target's build wins once the
+update lands, and the side-tag rebuild is silently lost. The longer the
+tag stays open, the likelier this is, so check right before creating
+the Bodhi update, not only when the tag is first populated:
+```
+tag=<sidetag> target=<target, e.g. f46>
+koji list-tagged --latest --quiet "$tag" | while read -r nvr _; do
+    name=${nvr%-*-*}
+    cur=$(koji latest-build --quiet "$target" "$name" | awk '{print $1}')
+    [ -n "$cur" ] && rpmdev-vercmp "${nvr#"$name"-}" "${cur#"$name"-}" |
+        tail -1 | sed "s/^/$name: /"
+done | grep -v ' > '
+```
+- `list-tagged` without `--inherit` lists only the builds made in the
+  side tag. Any output line is a package whose side-tag build is not
+  newer than the target's: rebuild it in the side tag from the current
+  dist-git branch, so it sorts above the target's build again
+- Example: during the libical 4 rebuilds, `asterisk-24.0.0-1.fc46.1`
+  was rebuilt in the side tag while its maintainer built
+  `asterisk-24.0.0-3.fc46` in plain rawhide, against libical 3. Merging
+  would have shipped `-3`, built against the old libical
+- Also check that no build in the side tag is already part of another
+  update (a build borrowed from elsewhere, or submitted separately);
+  Bodhi refuses the side-tag update if one is. Each NVR should give
+  `0 updates found` with `bodhi updates query --builds <nvr>`
+
 ## Reference Data
 
 ### Fedora Spec Archive
