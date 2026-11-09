@@ -154,12 +154,18 @@ rmdepcheck, license-validate, and the package's own TMT plans as
 
 ## Before Creating a Side Tag Update
 
-While a side tag is open, other maintainers keep building the same
-packages in the plain target (e.g. rawhide). If the target's build of a
-package sorts above the side tag's, the target's build wins once the
-update lands, and the side-tag rebuild is silently lost. The longer the
-tag stays open, the likelier this is, so check right before creating
-the Bodhi update, not only when the tag is first populated:
+While a side tag is open, the target (e.g. rawhide) keeps moving: other
+maintainers build the same packages there, and new users of the changed
+library appear. Either can silently undo the side tag's work once the
+update lands. The longer the tag stays open, the likelier this is, so
+run these checks right before creating the Bodhi update, not only when
+the tag is first populated.
+
+### Builds Overtaken in the Target
+
+If the target's build of a package sorts above the side tag's, the
+target's build wins once the update lands, and the side-tag rebuild is
+lost:
 ```
 tag=<sidetag> target=<target, e.g. f46>
 koji list-tagged --latest --quiet "$tag" | while read -r nvr _; do
@@ -177,10 +183,33 @@ done | grep -v ' > '
   was rebuilt in the side tag while its maintainer built
   `asterisk-24.0.0-3.fc46` in plain rawhide, against libical 3. Merging
   would have shipped `-3`, built against the old libical
-- Also check that no build in the side tag is already part of another
-  update (a build borrowed from elsewhere, or submitted separately);
-  Bodhi refuses the side-tag update if one is. Each NVR should give
-  `0 updates found` with `bodhi updates query --builds <nvr>`
+
+### New Reverse Dependencies
+
+- Rerun the reverse-dependency query for the changed or removed
+  provides against the target, and compare it with the rebuild list,
+  e.g. `fedrq whatrequires -b rawhide -F source 'libfoo.so.N()(64bit)'`
+  (and `-A src` with the `-devel` provides for the BuildRequires side).
+  A new package, or one that started using the library, built in the
+  target since the list was drawn up still links the old soname and
+  becomes uninstallable once the update lands: rebuild or port it in
+  the side tag
+- Example: the libical 4 rebuild list was settled on 2026-11-03; the
+  new `ical` package was built in plain f46 on 2026-11-05, against
+  `libical.so.3`
+
+### Builds Already in Another Update
+
+- Bodhi refuses the side-tag update if any of its builds is already
+  part of another update. This usually means a borrowed build: one
+  from another pending update (a security fix, a dependency bump)
+  tagged into the side tag to build against, which keeps the update
+  more self-contained than a buildroot override. Untag it from the
+  side tag (`koji untag-build <sidetag> <nvr>`) before creating the
+  update. If the update's builds need it at runtime (unlike statically
+  linked Rust binaries), don't let the update go stable before the
+  borrowed build's update does. Each NVR should give `0 updates found`
+  with `bodhi updates query --builds <nvr>`
 
 ## Reference Data
 
