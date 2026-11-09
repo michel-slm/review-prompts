@@ -114,6 +114,21 @@ What a trailing (`epel10.x`) branch takes:
   included; non-security incompatible updates are not allowed at all
   (ship a parallel package such as `foo2` instead)
 
+## RHEL Jira Issues for CentOS Stream Contributions
+
+- File one issue per CentOS Stream branch, with that branch's
+  `CentOS Stream N` as the only Affects Version, and let Red Hat set the
+  RHEL versions and z-streams. Jira accepts several values, but the RHEL
+  project has a single-value policy for the field: a sync bot
+  ("GitLab Component Sync") strips extra values, saying it keeps the
+  first one listed. On RHEL-123605 (2026-10-01) it removed three of
+  four extras and left `rhel-10.0`, so what survives is unpredictable
+- Resolution "Done" does not mean a fix shipped: issues get closed
+  straight from New, with no Fix Version, while their merge requests
+  are still open (RHEL-123605, RHEL-123606). Before treating an issue
+  as fixed, check that the merge request was merged or that the change
+  is in the released package
+
 ## Build System Differences
 
 ### CentOS Stream Build Pipeline
