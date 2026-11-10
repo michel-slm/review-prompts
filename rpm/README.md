@@ -5,11 +5,13 @@ CentOS Stream distributions.
 
 ## Installation
 
-Run the setup script to install the skill and slash commands:
+Run the top-level setup script from the repository root to install
+the skill and slash commands:
 
-    ./scripts/claude-setup.sh
+    ./setup.sh claude rpm
 
-This will install:
+`./setup.sh -h` lists the other supported agents. For Claude Code this
+will install:
 - The `rpm` skill to `~/.claude/skills/rpm/SKILL.md`
 - Slash commands to `~/.claude/commands/`
 
@@ -60,13 +62,9 @@ and verify workflows.
 
 ## Integration
 
-This setup coexists with kernel, systemd, and iproute review prompts.
-Each installs to a separate skill directory. To install all:
-
-    cd kernel/scripts && ./claude-setup.sh
-    cd ../../systemd/scripts && ./claude-setup.sh
-    cd ../../iproute/scripts && ./claude-setup.sh
-    cd ../../rpm/scripts && ./claude-setup.sh
+This setup coexists with the other projects' review prompts. Each
+installs to a separate skill directory; run `./setup.sh <agent> <project>`
+once per project.
 
 ## Supported Distributions
 

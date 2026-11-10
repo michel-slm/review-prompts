@@ -3,10 +3,10 @@ name: rpm-debug
 description: Debug RPM build failures and packaging issues
 ---
 
-Using the prompt REVIEW_DIR/debugging.md, analyze the provided build log,
+Using the prompt {{REVIEW_DIR}}/debugging.md, analyze the provided build log,
 error message, or packaging issue.
 
-Load REVIEW_DIR/technical-patterns.md first, then follow the complete
+Load {{REVIEW_DIR}}/technical-patterns.md first, then follow the complete
 debugging protocol in debugging.md, loading ecosystem and topic files as
 it directs.
 
