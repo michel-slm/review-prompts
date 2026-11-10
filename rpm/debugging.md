@@ -139,6 +139,24 @@ of a full rebuild, as long as that tree still exists:
   failing with `environment variable 'RPM_ARCH' not defined`. Export
   them (build.log's `+ export ...` lines have the values) or build only
   the failing object
+- With the mock ccache plugin on, rpmbuild finds the compiler wrappers
+  because mock runs it in a login shell (`bash --login`), which sources
+  the ccache package's `/etc/profile.d/ccache.sh` and puts
+  `/usr/lib64/ccache` first in `PATH`. `--chroot` and `--shell '<cmd>'`
+  run no login shell, so a build tool run there calls the compiler
+  directly and the cache is never used (an interactive `--shell` is a
+  login shell and does get it). The plugin's `CCACHE_*` variables are
+  set in both cases, so a login shell is enough:
+  `mock -r <cfg> --unpriv --chroot "bash -lc 'ninja -C <dir>'"`
+- Check `ccache -s` before counting on ccache to speed up a rebuild:
+  - Precompiled headers (CMake `target_precompile_headers`) can make
+    most compiler calls uncacheable ("Could not use precompiled
+    header"): in one EternalTerminal build, 342 of 360, and a warm
+    rebuild took as long as a cold one. ccache's manual (Precompiled
+    headers) requires `CCACHE_SLOPPINESS=pch_defines,time_macros` for
+    them, among other conditions; for a debugging rebuild,
+    `-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON` sidesteps the question
+  - ccache does not cache linking, which dominates with LTO
 - Confirm with a full clean rebuild before claiming the fix
 
 Inspect macro expansion in the target environment:
