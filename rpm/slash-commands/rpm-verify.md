@@ -3,7 +3,7 @@ name: rpm-verify
 description: Verify findings against RPM packaging false positive patterns
 ---
 
-Using the prompt REVIEW_DIR/false-positive-guide.md, verify that a
+Using the prompt {{REVIEW_DIR}}/false-positive-guide.md, verify that a
 reported packaging issue is not a false positive.
 
 This command helps validate potential issues found during spec file review

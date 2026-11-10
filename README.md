@@ -90,7 +90,6 @@ review-prompts/
 ├── rpm/                      # RPM packaging prompts
 │   ├── skills/               # Skill template
 │   ├── slash-commands/       # /rpm-review, /rpm-debug, /rpm-verify
-│   ├── scripts/              # Setup script
 │   ├── distro/               # Fedora / CentOS Stream guidelines
 │   ├── ecosystem/            # Rust, Go, Python packaging
 │   └── *.md                  # Protocol and topic files
