@@ -181,6 +181,16 @@ Queries and formatters:
   (https://forge.fedoraproject.org/packaging/fedrq/issues/119). Resolve a
   capability to its providers with `fedrq pkgs -P <capability> -F name`
   (or `-F source`)
+- To check whether a Python project is packaged, query its capability,
+  `fedrq pkgs -P 'python3dist(<name>)'`, instead of guessing a package
+  name. Only libraries must take the `python3-` prefix; packages that
+  mainly provide applications follow the general naming guidelines
+  (`mkdocs`, `mkdocs-material`), and a `python3-<name>` virtual provide
+  is optional (mkdocs has none). So an empty result for a guessed
+  `python3-<name>` does not mean the project is not packaged. Use the
+  normalized project name: lowercase, with `_` and `.` as `-`
+  (`python3dist(zope-interface)`; `python3dist(zope.interface)` and
+  `python3dist(PyYAML)` find nothing)
 - `-F source` already prints bare source package names
   (`evolution-data-server`), not NVRs. Do not strip a "version-release"
   suffix with `sed 's/-[^-]*-[^-]*$//'`; it mangles hyphenated names
