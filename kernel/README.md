@@ -14,18 +14,23 @@ through lore as part of the review.
 
 ## Installation
 
-For Claude Code users, run the setup script to install the kernel skill and
-slash commands:
+Run the setup script from the root of this repository to
+install the kernel skill and slash commands:
 
 ```bash
-./scripts/claude-setup.sh
+../setup.sh <agent> <project>
 ```
+
+Where `<agent>` is one of available agents and `<project>` is one of available
+projects that are explicitly stated in the usage message when the script is
+executed with `-h|--help` option.
 
 This installs:
 - **Kernel skill** (`~/.claude/skills/kernel/SKILL.md`) - Automatically loads
   kernel-specific context when working in kernel trees
 - **Slash commands** (`~/.claude/commands/`) - Quick access to common operations:
-  - `/kreview` - Review commits for regressions
+  - `/kreview` - Review a single commit for regressions
+  - `/kseries` - Review an entire patch series (git range) commit-by-commit
   - `/kdebug` - Debug kernel crashes and warnings
   - `/kverify` - Verify findings against false positive patterns
 
@@ -34,16 +39,16 @@ repository, so don't move it after installation.
 
 ## Quick start
 
-Put these prompts somewhere, and then tell claude to use them:
+Put these prompts somewhere, and then tell the agent to use them:
 
 ```
-claude> Using the prompt ../review-prompts/review-core.md run a deep dive regression analysis of the top commit
+> Using the prompt ../review-prompts/review-core.md run a deep dive regression analysis of the top commit
 ```
 
-Claude has a internal definition of what "reviewing" code means, so if we call
-it a review, it will generally follow that internal definition.  We can nudge it
-slightly, but calling it a deep dive regression analysis leads to better
-compliance with the prompts.
+The agent has an internal definition of what "reviewing" code means, so if we
+call it a review, it will generally follow that internal definition.  We can
+nudge it slightly, but calling it a deep dive regression analysis leads to
+better compliance with the prompts.
 
 You can also feed it incremental diffs, or use debugging.md with an oops
 or stack trace.
@@ -57,7 +62,7 @@ a review of multiple commits in parallel.
 
 ## Output
 
-Claude will chat its way through the code review, and that output is
+The agent will chat its way through the code review, and that output is
 pretty useful.  If regressions are found, it creates a review-inline.txt
 file, which is meant to look like an email that would be sent to lkml.
 
@@ -138,4 +143,3 @@ help it find new classes of bugs are very much appreciated.
 The prompts have been developed against claude, but gemini also works well.
 These should be generic enough that other agents work too, but please send patches
 if we can improve performance with any of the other agents.
-

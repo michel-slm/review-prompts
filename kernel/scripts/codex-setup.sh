@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# Claude Code setup for systemd development
+# Codex setup for Linux kernel development
 #
 # Installs:
-#   - systemd skill to ~/.claude/skills/systemd/SKILL.md
-#   - Slash commands to ~/.claude/commands/
+#   - Kernel skill to ~/.codex/skills/kernel/SKILL.md
+#   - Slash commands to ~/.codex/prompts/
 #
 # The prompts directory is determined from this script's location.
 
@@ -21,9 +21,9 @@ echo ""
 
 # --- Install Skill ---
 
-SKILL_DIR="$HOME/.claude/skills/systemd"
+SKILL_DIR="$HOME/.codex/skills/kernel"
 SKILL_FILE="$SKILL_DIR/SKILL.md"
-SOURCE_SKILL="$PROMPTS_DIR/skills/systemd.md"
+SOURCE_SKILL="$PROMPTS_DIR/skills/kernel.md"
 
 if [ ! -f "$SOURCE_SKILL" ]; then
     echo "Error: Source skill file not found: $SOURCE_SKILL"
@@ -32,14 +32,14 @@ fi
 
 mkdir -p "$SKILL_DIR"
 
-sed "s|{{SYSTEMD_REVIEW_PROMPTS_DIR}}|$PROMPTS_DIR|g" "$SOURCE_SKILL" > "$SKILL_FILE"
+sed "s|{{KERNEL_REVIEW_PROMPTS_DIR}}|$PROMPTS_DIR|g" "$SOURCE_SKILL" > "$SKILL_FILE"
 
 echo "Installed skill:"
 echo "  $SKILL_FILE"
 
 # --- Install Slash Commands ---
 
-COMMANDS_DIR="$HOME/.claude/commands"
+COMMANDS_DIR="$HOME/.codex/prompts"
 SLASH_COMMANDS_SRC="$PROMPTS_DIR/slash-commands"
 
 if [ ! -d "$SLASH_COMMANDS_SRC" ]; then
@@ -53,8 +53,8 @@ else
     for cmd_file in "$SLASH_COMMANDS_SRC"/*.md; do
         if [ -f "$cmd_file" ]; then
             cmd_name=$(basename "$cmd_file")
-            sed "s|REVIEW_DIR|$PROMPTS_DIR|g" "$cmd_file" > "$COMMANDS_DIR/$cmd_name"
-            echo "  /${cmd_name%.md}"
+            sed "s|{{REVIEW_DIR}}|$PROMPTS_DIR|g" "$cmd_file" > "$COMMANDS_DIR/$cmd_name"
+            echo "  /$cmd_name"
         fi
     done
 fi
@@ -63,8 +63,9 @@ echo ""
 echo "Setup complete!"
 echo ""
 echo "Available commands:"
-echo "  /systemd-review - Review commits for regressions"
-echo "  /systemd-debug  - Debug systemd crashes and issues"
-echo "  /systemd-verify - Verify findings against false positive patterns"
+echo "  /kreview    - Review commits for regressions"
+echo "  /korcreview - Deep dive regression analysis using ORC agent"
+echo "  /kdebug     - Debug kernel crashes and warnings"
+echo "  /kverify    - Verify findings against false positive patterns"
 echo ""
-echo "The systemd skill loads automatically in systemd trees."
+echo "The kernel skill loads automatically in kernel trees."
