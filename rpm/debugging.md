@@ -149,14 +149,23 @@ of a full rebuild, as long as that tree still exists:
   set in both cases, so a login shell is enough:
   `mock -r <cfg> --unpriv --chroot "bash -lc 'ninja -C <dir>'"`
 - Check `ccache -s` before counting on ccache to speed up a rebuild:
-  - Precompiled headers (CMake `target_precompile_headers`) can make
-    most compiler calls uncacheable ("Could not use precompiled
-    header"): in one EternalTerminal build, 342 of 360, and a warm
-    rebuild took as long as a cold one. ccache's manual (Precompiled
-    headers) requires `CCACHE_SLOPPINESS=pch_defines,time_macros` for
-    them, among other conditions; for a debugging rebuild,
-    `-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON` sidesteps the question
-  - ccache does not cache linking, which dominates with LTO
+  - With GCC, precompiled headers (CMake `target_precompile_headers`)
+    defeat ccache. Without `CCACHE_SLOPPINESS=pch_defines,time_macros`,
+    which ccache's manual requires for them, most calls are
+    uncacheable ("Could not use precompiled header"); with it they are
+    cached but still miss on a warm rebuild. For repeated debugging
+    rebuilds, configure with `-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON`
+    instead: in an EternalTerminal build (aarch64, 4 CPUs) the warm
+    rebuild took 24 s instead of about 990 s, and the cold build was
+    no slower. Without precompiled headers, warnings in the header
+    itself can appear that GCC did not report from the PCH, and an
+    upstream `-Werror` turns them into errors. They are not the bug
+    being chased: add `-Wno-error` to that debugging configure, or
+    patch the warning in the chroot tree. Neither belongs in the spec,
+    whose build keeps the precompiled headers
+  - ccache does not cache linking, which dominates with LTO: with
+    Fedora's flags, the same warm rebuild still took 110 s (1182 s
+    cold)
 - Confirm with a full clean rebuild before claiming the fix
 
 Inspect macro expansion in the target environment:
